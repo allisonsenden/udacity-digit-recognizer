@@ -33,90 +33,40 @@ At first, I found the Kaggle competition and started by using the data that they
 I started off by first exploring some of the images that I was going to try classifying. We can see that the images are pretty easy to classify to a human eye, but since they are a bit odd shaped sometimes, I can see how a computer or algorithm might have a bit of difficulty. When visualizing the images, notice we have to use the reshaped images (28x28). This is so that we give it the 2D affect which allows us to plot the image's pixels. I thought it was important to get an idea of what the handwritten samples look like before deciding the preprocessing steps and defining the model architecture.
 
 ### Algorithms and Techniques
-In order to solve this problem, I will implement a k-nearest neighbor model that’s tuned so that it can classify the images properly. I feel that it best suites the problem at hand. I think choosing a k=10 as there are 10 numbers (0-9) makes the most sense, but we will see once we do more analysis.
-
-In this section, you will need to discuss the algorithms and techniques you intend to use for solving the problem. You should justify the use of each one based on the characteristics of the problem and the problem domain. Questions to ask yourself when writing this section:
-- _Are the algorithms you will use, including any default variables/parameters in the project clearly defined?_
-- _Are the techniques to be used thoroughly discussed and justified?_
-- _Is it made clear how the input data or datasets will be handled by the algorithms and techniques chosen?_
+In order to solve this problem, I will implement a k-nearest neighbor model that’s tuned so that it can classify the images properly. I feel that it best suites the problem at hand. I think choosing a k=10 as there are 10 numbers (0-9) makes the most sense, but we will see once we do more analysis. It also turns out that this is one of the most commonly used algorithms to attack this classificaiton of images problem. This algorithm is commonly used for this application because it clusters inputs together and then tries to classify those like features similarily. This would make sense for our problem at hand, because the algorithm can find similarities in the images and then group them based on its findings. We have 10 different numbers that it can classify so I would expect to see 10 different clusters - one for each number possibility. For the benchmark model, as I mentioned earlier, I will apply a SVC model. I like to use this model most of the time for benchmarking. It performs decently well for a wide variety of problems. Although, I found that it's best at classification and regression problems via this site: https://medium.com/@dataturks/understanding-svms-for-image-classification-cf4f01232700. The way that SVM works is it calculates a few different boundries and by comparing the differences, it can make a guess as to the classification it should be. This will work in our case because it can calculate the differences of boundries of the written line and where it is on the image to be able to decipher what number it is. After applying both algorithms, I will compare the performance by using the accuracy metric. This means, I will compare the number of images the model classified correctly vs. the incorrectly classified ones. This is the best metric for our use case as we only care how many images we are able to correclty classify.
 
 ### Benchmark
-Some models that are historically use to evaluate this dataset are SVM and k-nearest neighbors. I will use these 2 models as a baseline for my work, and then hopefully I create and fine tune a model that will perform even better than these baselines. K-nearest neighbor is good fit for this problem since its goal is to essentially cluster the alike images into the same cluster. This helps me because it’s choosing the images that most likely are the same as those in that same cluster. For me, I can make those clusters each of the different digits 0-9. Then when it’s predicting, it will choose the cluster that the digit resembles the most.
-
-In this section, you will need to provide a clearly defined benchmark result or threshold for comparing across performances obtained by your solution. The reasoning behind the benchmark (in the case where it is not an established result) should be discussed. Questions to ask yourself when writing this section:
-- _Has some result or value been provided that acts as a benchmark for measuring performance?_
-- _Is it clear how this result or value was obtained (whether by data or by hypothesis)?_
-
+Some models that are historically use to evaluate this dataset are SVM and k-nearest neighbors. I will use these 2 models as a baseline for my work, and then hopefully I create and fine tune a model that will perform even better than these baselines. K-nearest neighbor is good fit for this problem since its goal is to essentially cluster the alike images into the same cluster. This helps me because it’s choosing the images that most likely are the same as those in that same cluster. For me, I can make those clusters each of the different digits 0-9. Then when it’s predicting, it will choose the cluster that the digit resembles the most. After running the benchmark model, we get an accuracy score of about 11%. So this is not a very good result, but remember, this is just our benchmark. From here, we hope to improve the classification by using a different model architecture.
 
 ## III. Methodology
-_(approx. 3-5 pages)_
 
 ### Data Preprocessing
-In this section, all of your preprocessing steps will need to be clearly documented, if any were necessary. From the previous section, any of the abnormalities or characteristics that you identified about the dataset will be addressed and corrected here. Questions to ask yourself when writing this section:
-- _If the algorithms chosen require preprocessing steps like feature selection or feature transformations, have they been properly documented?_
-- _Based on the **Data Exploration** section, if there were abnormalities or characteristics that needed to be addressed, have they been properly corrected?_
-- _If no preprocessing is needed, has it been made clear why?_
+I sort of explained the preprocessing steps in another section prior to this, but let's cover again to be very clear. Since I used the data from keras, it came already packaged as an array of arrays. The images had already been preprocessed a bit so they were resized to allow the image have the shape (28x28). Since we chose to use SVC and k-nearest neighbor as our models, we have to ensure that those models will be able to intake the data we are giving it. Both of those models expect 2D data, which means the reshaped 3D data to allow the size of 28x28 will need to be transformed. So we completed that tranformation step and noticed some other things that needed to be done. The X-data was turned into floats and the labels (y-data) into integers. This was done on both the training and the test datasets. This just makes handling the pixels easier and keeps the labels as whole numbers (no decimals). Since we have 10 different integers as the labels, we can one-hot encode these to make it easier to handle when feeding it into the model. Originally I thought I was going to need to reshape the images again to have a single channel on top of being resized to 28x28, but then realized I did not as the models can't intake dimensions higher than 2. So you will see an extra cell in the preprocessing section of the notebook, although I admit, it didn't need to be done. 
 
 ### Implementation
-In this section, the process for which metrics, algorithms, and techniques that you implemented for the given data will need to be clearly documented. It should be abundantly clear how the implementation was carried out, and discussion should be made regarding any complications that occurred during this process. Questions to ask yourself when writing this section:
-- _Is it made clear how the algorithms and techniques were implemented with the given datasets or input data?_
-- _Were there any complications with the original metrics or techniques that required changing prior to acquiring a solution?_
-- _Was there any part of the coding process (e.g., writing complicated functions) that should be documented?_
+Next, I implemented a k-nearest neighbor model architecture and ran it against our dataset. The first order of business was to determine the k-value that would give me the best results. So I looped through 1-30 as options for k and printed off the accuracies as it was looping through them. This process took a pretty long time, but worth it because I did find a k-value that would give me a really good result! Originally I had hoped to use the AWS console to spin up a jupyter notebook there where I would have access to GPU. After attempting to spin this up though, I was running into a few errors and I decided that it would just be easier to wait it out and train on CPU. I think I did not have something in the train.py setup properly. Either way, this is why deciding the k-value took a bit longer, but agian it ended up being worth it. The optimal k-value turned out to be 1. When I then ran the k-nearest neighbor model with k=1, it ended up scoring a 97% accuracy! Awesome! I was really happy with this so I stuck to it for the final model.
 
 ### Refinement
-In this section, you will need to discuss the process of improvement you made upon the algorithms and techniques you used in your implementation. For example, adjusting parameters for certain models to acquire improved solutions would fall under the refinement category. Your initial and final solutions should be reported, as well as any significant intermediate results as necessary. Questions to ask yourself when writing this section:
-- _Has an initial solution been found and clearly reported?_
-- _Is the process of improvement clearly documented, such as what techniques were used?_
-- _Are intermediate and final solutions clearly reported as the process is improved?_
+During the implementation phase, I mentioned that I needed to determine the optimal k-value. This was actually something that came to me after I tried to implement the k-nearest neighbor model with a k-value of 10. I thought that 10 made the most sense in my mind because there were 10 different classes or numbers that we were trying to predict, so naturally that is how many clusters would appear in the data. After looking more at the documentation, I realized that I should actually test that theory instead of assuming that 10 was the optimal value for k. So I went back and refined my implementation to include looking for the best k-value. This also meant that I was going to need to further break down the data so that I would have a validation set to be able to calculate the accuracies of each k-value I wanted to test. So I broke the training set down further into a validation and training set. Then I was able to use those 2 breakdowns to calculate the optimal k, and then once chosen, use the training data to fit the model and test data to predict and find the accuracy of the model.
 
 
 ## IV. Results
-_(approx. 2-3 pages)_
 
 ### Model Evaluation and Validation
-In this section, the final model and any supporting qualities should be evaluated in detail. It should be clear how the final model was derived and why this model was chosen. In addition, some type of analysis should be used to validate the robustness of this model and its solution, such as manipulating the input data or environment to see how the model’s solution is affected (this is called sensitivity analysis). Questions to ask yourself when writing this section:
-- _Is the final model reasonable and aligning with solution expectations? Are the final parameters of the model appropriate?_
-- _Has the final model been tested with various inputs to evaluate whether the model generalizes well to unseen data?_
-- _Is the model robust enough for the problem? Do small perturbations (changes) in training data or the input space greatly affect the results?_
-- _Can results found from the model be trusted?_
+I chose this model for many of the reasons I listed above. It is a clustering algorithm that's good and classification problems and picking out similarities between the feature inputs. For this classification of handwritten numbers, that description fits perfectly. Not to mention the fact that through research, I found many others have chosen the route of applying this algorithm to image processing problems because of it's strengths. That is why we can see that this algorithm does much better than the benchmark model SVC. Upon printing the classification_report, we can see the accuracy in which the model is able to classify each of the numbers. They all have very high accuracy rates (or in the classification_report it's referred to as precision). Since the training handwritten numbers come from a different pool of people than the test handwritten numbers, we see that this model can indeed learn from different people's handwriting. Meaning the different angles they write at, the handedness of them, etc. The model can predict the numbers with a 97% accuracy even given different datasets, so I would say that this solution has the ability to be generalized to unseen data pretty well.
 
 ### Justification
-In this section, your model’s final solution and its results should be compared to the benchmark you established earlier in the project using some type of statistical analysis. You should also justify whether these results and the solution are significant enough to have solved the problem posed in the project. Questions to ask yourself when writing this section:
-- _Are the final results found stronger than the benchmark result reported earlier?_
-- _Have you thoroughly analyzed and discussed the final solution?_
-- _Is the final solution significant enough to have solved the problem?_
+I believe the output of the k-nearest neighbor model does a great job at solving the problem at hand - correct classification of handwritten numbers. Since it performs at a 97% accuracy, we can safely assume that most of the time the model is doing a great job at predicting the correct number. This is by far a much better performance than the benchmark SVC model at 11%. I think that the attributes of a k-nearest neighbor algorithm are better suited to image classificaiton problems than SVC. Although, with some fine tuning, I think that we could have gotten a better result from the SVC. Since it was just the benchmark, we didn't fuss with trying to make it perform better.
 
 
 ## V. Conclusion
-_(approx. 1-2 pages)_
 
 ### Free-Form Visualization
-In this section, you will need to provide some form of visualization that emphasizes an important quality about the project. It is much more free-form, but should reasonably support a significant result or characteristic about the problem that you want to discuss. Questions to ask yourself when writing this section:
-- _Have you visualized a relevant or important quality about the problem, dataset, input data, or results?_
-- _Is the visualization thoroughly analyzed and discussed?_
-- _If a plot is provided, are the axes, title, and datum clearly defined?_
+I wanted to show the results of the model's prediction for this portion of the project. You can see that I've printed the image that is classified and the model's prediciton of what number it should be. You can put in any image you like, but I've just chose one at random for visualization purposes. This is mostly for validation purposes and checking the results of the model are truly accurate or what we would expect. Going by this, I think it's safe to say it's what we expected! 
 
 ### Reflection
-In this section, you will summarize the entire end-to-end problem solution and discuss one or two particular aspects of the project you found interesting or difficult. You are expected to reflect on the project as a whole to show that you have a firm understanding of the entire process employed in your work. Questions to ask yourself when writing this section:
-- _Have you thoroughly summarized the entire process you used for this project?_
-- _Were there any interesting aspects of the project?_
-- _Were there any difficult aspects of the project?_
-- _Does the final model and solution fit your expectations for the problem, and should it be used in a general setting to solve these types of problems?_
+I found this project extremely interesting. It was cool to work with image data for a change since it's much different then we are used to with text and other data types filling the columns instead of pixel data. I learned a lot about how to deal with pixels, image sizing and more. I was very surprised to learn that the optimal value for k ended up being 1. I thought for sure that it was going to be 10. It was crazy to see the accuracy actually decreased as the k value increased. The most difficult part of the project for me was figuring out the image sizing. I'm not used to working with arrays of numbers as a representation of an image. It was a bit more abstract and took me a minute to wrap my head around. This is why visualizing some of the images that we were trying to classify was so important to me. Overall, I'm happy with the results of the model and project.
 
 ### Improvement
-In this section, you will need to provide discussion as to how one aspect of the implementation you designed could be improved. As an example, consider ways your implementation can be made more general, and what would need to be modified. You do not need to make this improvement, but the potential solutions resulting from these changes are considered and compared/contrasted to your current solution. Questions to ask yourself when writing this section:
-- _Are there further improvements that could be made on the algorithms or techniques you used in this project?_
-- _Were there algorithms or techniques you researched that you did not know how to implement, but would consider using if you knew how?_
-- _If you used your final solution as the new benchmark, do you think an even better solution exists?_
+To improve upon this project, I would have liked to get it running in the GPU instance. I could spend some time debugging the errors I was running into with AWS Console to have the ability to play with the models a bit more as they would take much less time to train. Another thing that I would like to do is take the project one step further. In my free time, I will probably experiment with applying a keras neural network to it as well. This will allow me to pass in more than the 2 dimensions that SVC and k-nearest neighbor require.
 
------------
-
-**Before submitting, ask yourself. . .**
-
-- Does the project report you’ve written follow a well-organized structure similar to that of the project template?
-- Is each section (particularly **Analysis** and **Methodology**) written in a clear, concise and specific fashion? Are there any ambiguous terms or phrases that need clarification?
-- Would the intended audience of your project be able to understand your analysis, methods, and results?
-- Have you properly proof-read your project report to assure there are minimal grammatical and spelling mistakes?
-- Are all the resources used for this project correctly cited and referenced?
-- Is the code that implements your solution easily readable and properly commented?
-- Does the code execute without error and produce results similar to those reported?
