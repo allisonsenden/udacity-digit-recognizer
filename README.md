@@ -26,8 +26,8 @@ At first, I found the Kaggle competition and started by using the data that they
 
 ### Exploratory Visualization
 I started off by first exploring some of the images that I was going to try classifying. We can see that the images are pretty easy to classify to a human eye, but since they are a bit odd shaped sometimes, I can see how a computer or algorithm might have a bit of difficulty. When visualizing the images, notice we have to use the reshaped images (28x28). This is so that we give it the 2D affect which allows us to plot the image's pixels. I thought it was important to get an idea of what the handwritten samples look like before deciding the preprocessing steps and defining the model architecture.
-! [Alt text] (https://github.com/allisonsenden/udacity-digit-recognizer/tree/master/screenshots/first_glance_images.png?sanitize=true)
-<img src="https://github.com/allisonsenden/udacity-digit-recognizer/tree/master/screenshots/first_glance_images.png?sanitize=true">
+![](screenshots/first_glance_images.png?sanitize=true)
+
 
 
 ### Algorithms and Techniques
